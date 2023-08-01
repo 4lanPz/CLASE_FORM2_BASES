@@ -4,7 +4,11 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 
 public class Datos {
-    String NOMBRE, APELLIDO;
+    int cont=1;
+    //datos para ingresar a la base
+    static String DB_URL="jdbc:mysql://localhost/LOGINCHIDO";
+    static String USER="root";
+    static String PASS="root_bas3";
     private JPanel pantalla;
     private JTextField TNOMBRE;
     private JTextField TAPELLIDO;
@@ -20,47 +24,109 @@ public class Datos {
     private JLabel LCIUDAD;
     private JLabel LCEDULA;
     private JLabel TID;
+    private JButton DELETEButton;
+    private JButton SELECTButton;
+    private JTextField TIDDELETE;
+    private JLabel LDELETE;
 
     public Datos() {
+        SELECTButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                /*String nombre, apellido, edad,ciudad,id,cedula;*/
+                String QUERY="SELECT * FROM EJERCICIO1";
+                try(Connection conn=DriverManager.getConnection(DB_URL,USER,PASS);
+                    Statement stmt = conn.createStatement();
+                    ResultSet rs= stmt.executeQuery(QUERY);)
+                {
+                    while(rs.next()){
+                        System.out.println("Id: "+rs.getInt("ID"));
+                        System.out.println("Nombre: "+rs.getString("NOMBRE"));
+                        System.out.println("Apellido: "+rs.getString("APELLIDO"));
+                        System.out.println("Edad: "+rs.getInt("EDAD"));
+                        System.out.println("Ciudad: "+rs.getString("CIUDAD"));
+                        System.out.println("Cedula: "+rs.getInt("CEDULA"));
+                        /*id=String.valueOf(rs.getInt("id"));
+                        nombre=String.valueOf(rs.getInt("id"));
+                        edad=rs.getString("NOMBRE");
+                        ciudad=rs.getString("CIUDAD");
+                        cedula= String.valueOf(rs.getInt("CEDULA"));*/
+                        System.out.println("***********************");
+                    }
+                    System.out.println("-------------------------------------------");
+                }
+                catch (SQLException eX){
+                    throw new RuntimeException(eX);
+                }
+            }
+        });
         ENVIARButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int contador,ID;
+                cont++;
+                contador=cont;
+                String NOMBRE, APELLIDO,EDAD,CIUDAD,CEDULA;
+
                 NOMBRE = TNOMBRE.getText();
                 APELLIDO = TAPELLIDO.getText();
+                EDAD = TEDAD.getText();
+                CIUDAD = TCIUDAD.getText();
+                CEDULA = TCEDULA.getText();
+                TID.setText(String.valueOf(contador));
+                ID= Integer.parseInt(TID.getText());
                 System.out.println(NOMBRE);
                 System.out.println(APELLIDO);
-                login();
+                String QUERY="INSERT INTO EJERCICIO1(ID,NOMBRE,APELLIDO,EDAD,CIUDAD,CEDULA)" +
+                        "VALUES(?,?,?,?,?,?)";
+                try(Connection conn=DriverManager.getConnection(DB_URL,USER,PASS))
+                {
+                    PreparedStatement statement = conn.prepareStatement(QUERY);
+                    // Establecer valores para los parámetros de la sentencia SQL
+                    statement.setInt(1,ID);
+                    statement.setString(2, NOMBRE);
+                    statement.setString(3, APELLIDO);
+                    statement.setString(4, EDAD);
+                    statement.setString(5, CIUDAD);
+                    statement.setString(6, CEDULA);
+                    // Ejecutar sentencia SQL
+                    int rowsInserted = statement.executeUpdate();
+                    if (rowsInserted > 0) {
+                        System.out.println("Datos insertados correctamente");
+                    }
+                }
+                catch (SQLException ex){
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        DELETEButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int idToDelete;
+                idToDelete= Integer.parseInt(TIDDELETE.getText());
+                String DELETE_QUERY = "DELETE FROM EJERCICIO1 WHERE ID = ?";
+                try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
+                    PreparedStatement statement = conn.prepareStatement(DELETE_QUERY);
+                    // Establecer valor para el parámetro del ID que deseas eliminar
+                    statement.setInt(1, idToDelete);
+
+                    // Ejecutar sentencia DELETE
+                    int rowsDeleted = statement.executeUpdate();
+
+                    if (rowsDeleted > 0) {
+                        System.out.println("Se eliminó la fila con ID " + idToDelete + " correctamente.");
+                    } else {
+                        System.out.println("No se encontró ninguna fila con el ID " + idToDelete + ".");
+                    }
+                } catch (SQLException eX) {
+                    eX.printStackTrace();
+                }
             }
         });
     }
 
-    private void login() {
-        int cont=0,contador;
-        cont++;
-        contador=cont;
-        String DB_URL="jdbc:mysql://localhost/LOGINCHIDO";
-        final String USER="root";
-        final String PASS="root_bas3";
-        final String QUERY="INSERT INTO DATOS_EJERCICIO(ID,NOMBRE,APELLIDO)" +
-                "VALUES()";
-        try(Connection conn=DriverManager.getConnection(DB_URL,USER,PASS);
-            Statement stmt = conn.createStatement();)
-        {
-            PreparedStatement statement = conn.prepareStatement(QUERY);
-            // Establecer valores para los parámetros de la sentencia SQL
-            statement.setInt(1,contador);
-            statement.setString(2, NOMBRE);
-            statement.setString(3, APELLIDO);
-            // Ejecutar sentencia SQL
-            int rowsInserted = statement.executeUpdate();
-            if (rowsInserted > 1) {
-                System.out.println("Datos insertados correctamente");
-            }
-        }
-        catch (SQLException e){
-            throw new RuntimeException(e);
-        }
-    }
+
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Datos");
