@@ -4,7 +4,7 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 
 public class Datos {
-    int cont=1;
+    int cont=0;
     //datos para ingresar a la base
     static String DB_URL="jdbc:mysql://localhost/LOGINCHIDO";
     static String USER="root";
@@ -28,6 +28,10 @@ public class Datos {
     private JButton SELECTButton;
     private JTextField TIDDELETE;
     private JLabel LDELETE;
+    private JTextField IDUP;
+    private JButton UPDATEButton;
+    private JTextField TNUEVON;
+    private JLabel LNUEVON;
 
     public Datos() {
         SELECTButton.addActionListener(new ActionListener() {
@@ -121,6 +125,35 @@ public class Datos {
                     }
                 } catch (SQLException eX) {
                     eX.printStackTrace();
+                }
+            }
+        });
+        UPDATEButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int idToUpdate; // Reemplaza 1 con el ID de la fila que deseas actualizar
+                String nuevoNombre; //
+                idToUpdate= Integer.parseInt(IDUP.getText());
+                nuevoNombre=TNUEVON.getText();
+                String UPDATE_QUERY = "UPDATE EJERCICIO1 SET NOMBRE = ? WHERE ID = ?";
+
+                try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
+                    PreparedStatement statement = conn.prepareStatement(UPDATE_QUERY);
+                    // Establecer nuevos valores para los campos NOMBRE y APELLIDO
+                    statement.setString(1,nuevoNombre);
+                    // Establecer valor para el parámetro del ID de la fila que deseas actualizar
+                    statement.setInt(2, idToUpdate);
+
+                    // Ejecutar sentencia UPDATE
+                    int rowsUpdated = statement.executeUpdate();
+
+                    if (rowsUpdated > 0) {
+                        System.out.println("Se actualizó la fila con ID " + idToUpdate + " correctamente.");
+                    } else {
+                        System.out.println("No se encontró ninguna fila con el ID " + idToUpdate + ".");
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
                 }
             }
         });
