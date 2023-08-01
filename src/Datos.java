@@ -32,6 +32,7 @@ public class Datos {
     private JButton UPDATEButton;
     private JTextField TNUEVON;
     private JLabel LNUEVON;
+    private JLabel LABEL1;
 
     public Datos() {
         SELECTButton.addActionListener(new ActionListener() {
@@ -96,6 +97,7 @@ public class Datos {
                     // Ejecutar sentencia SQL
                     int rowsInserted = statement.executeUpdate();
                     if (rowsInserted > 0) {
+                        LABEL1.setText("Datos insertados correctamente");
                         System.out.println("Datos insertados correctamente");
                     }
                 }
@@ -119,9 +121,9 @@ public class Datos {
                     int rowsDeleted = statement.executeUpdate();
 
                     if (rowsDeleted > 0) {
-                        System.out.println("Se eliminó la fila con ID " + idToDelete + " correctamente.");
+                        LABEL1.setText("Se eliminó la fila con ID " + idToDelete + " correctamente.");
                     } else {
-                        System.out.println("No se encontró ninguna fila con el ID " + idToDelete + ".");
+                        LABEL1.setText("No se encontró ninguna fila con el ID " + idToDelete + ".");
                     }
                 } catch (SQLException eX) {
                     eX.printStackTrace();
@@ -148,8 +150,10 @@ public class Datos {
                     int rowsUpdated = statement.executeUpdate();
 
                     if (rowsUpdated > 0) {
+                        LABEL1.setText("Se actualizó la fila con ID " + idToUpdate + " correctamente.");
                         System.out.println("Se actualizó la fila con ID " + idToUpdate + " correctamente.");
                     } else {
+                        LABEL1.setText("No se encontró ninguna fila con el ID " + idToUpdate + ".");
                         System.out.println("No se encontró ninguna fila con el ID " + idToUpdate + ".");
                     }
                 } catch (SQLException ex) {
